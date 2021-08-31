@@ -2,29 +2,34 @@ package server
 
 import (
 	"net/http"
+	"path/filepath"
+	"sync"
 	"text/template"
 
 	"go.uber.org/zap"
 )
 
 type ChatHandler struct {
-	Logger *zap.Logger
+	Logger   *zap.Logger
+	Once     sync.Once
+	Filename string
+	Templ    *template.Template
 }
 
-func NewChatHandler(logger *zap.Logger) *ChatHandler {
+func NewChatHandler(logger *zap.Logger, once sync.Once, filename string, templ *template.Template) *ChatHandler {
 	return &ChatHandler{
-		Logger: logger,
+		Logger:   logger,
+		Once:     once,
+		Filename: filename,
+		Templ:    templ,
 	}
 }
 
-func (h *ChatHandler) Index(w http.ResponseWriter, r *http.Request) {
-	templ, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		h.Logger.Error("Failed to find template", zap.Error(err))
-	}
+func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.Once.Do(func() {
+		h.Templ = template.Must(template.ParseFiles(filepath.Join("templates",
+			h.Filename)))
+	})
+	h.Templ.Execute(w, nil)
 
-	err = templ.Execute(w, nil)
-	if err != nil {
-		h.Logger.Error("Failed to execute all.html", zap.Error(err))
-	}
 }

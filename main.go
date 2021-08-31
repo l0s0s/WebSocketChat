@@ -13,8 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	chatHandler := server.NewChatHandler(logger)
-	http.HandleFunc("/", chatHandler.Index)
+	http.Handle("/", &server.ChatHandler{Filename: "index.html"})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		logger.Fatal("ListenAndServe:", zap.Error(err))
