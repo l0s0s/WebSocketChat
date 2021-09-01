@@ -9,20 +9,12 @@ import (
 	"go.uber.org/zap"
 )
 
+// ChatHandler represents a single template.
 type ChatHandler struct {
 	Logger   *zap.Logger
 	Once     sync.Once
 	Filename string
 	Templ    *template.Template
-}
-
-func NewChatHandler(logger *zap.Logger, once sync.Once, filename string, templ *template.Template) *ChatHandler {
-	return &ChatHandler{
-		Logger:   logger,
-		Once:     once,
-		Filename: filename,
-		Templ:    templ,
-	}
 }
 
 func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -31,5 +23,4 @@ func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.Filename)))
 	})
 	h.Templ.Execute(w, nil)
-
 }
