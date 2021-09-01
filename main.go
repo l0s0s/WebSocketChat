@@ -20,7 +20,7 @@ func main() {
 	r := client.NewRoom()
 	r.Tracer = trace.New(os.Stdout)
 
-	http.Handle("/", &server.ChatHandler{Filename: "chat.html", Logger: logger})
+	http.Handle("/", &server.ChatHandler{Filename: "chat.html"})
 	http.Handle("/room", r)
 
 	go r.Run()

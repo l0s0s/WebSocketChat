@@ -1,7 +1,6 @@
 package client
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -59,7 +58,7 @@ var upgrader = &websocket.Upgrader{
 func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
-		log.Fatal("ServeHTTP:", err)
+		r.Tracer.Trace(err)
 		return
 	}
 
