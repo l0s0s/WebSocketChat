@@ -1,14 +1,15 @@
-package trace
+package trace_test
 
 import (
 	"bytes"
 	"testing"
+
+	"github.com/l0s0s/WebSocketChat/trace"
 )
 
 func TestNew(t *testing.T) {
 	var buf bytes.Buffer
-	tracer := New(&buf)
-	if tracer == nil {
+	if tracer := trace.New(&buf); tracer == nil {
 		t.Error("Return from New should not be nil")
 	} else {
 		tracer.Trace("Hello trace package.")
@@ -19,6 +20,6 @@ func TestNew(t *testing.T) {
 }
 
 func TestOff(t *testing.T) {
-	var silentTracer Tracer = Off()
+	var silentTracer trace.Tracer = trace.Off()
 	silentTracer.Trace("something")
 }

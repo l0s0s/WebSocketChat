@@ -8,6 +8,7 @@ import (
 	"github.com/l0s0s/WebSocketChat/trace"
 )
 
+// Room is how all rooms look like.
 type Room struct {
 	Forward chan []byte
 	Join    chan *Client
@@ -16,7 +17,7 @@ type Room struct {
 	Tracer  trace.Tracer
 }
 
-// newRoom makes a new room.
+// NewRoom makes a new room.
 func NewRoom() *Room {
 	return &Room{
 		Forward: make(chan []byte),
@@ -27,6 +28,7 @@ func NewRoom() *Room {
 	}
 }
 
+// Run is run some room.
 func (r *Room) Run() {
 	for {
 		select {
@@ -39,17 +41,20 @@ func (r *Room) Run() {
 			r.Tracer.Trace("Client left")
 		case msg := <-r.Forward:
 			r.Tracer.Trace("Message received: ", string(msg))
+
 			for client := range r.Clients {
 				client.Send <- msg
 			}
-			r.Tracer.Trace(" -- sent to client")
 
+			r.Tracer.Trace(" -- sent to client")
 		}
 	}
 }
 
-var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize,
-	WriteBufferSize: socketBufferSize}
+var upgrader = &websocket.Upgrader{
+	ReadBufferSize:  socketBufferSize,
+	WriteBufferSize: socketBufferSize,
+}
 
 func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
@@ -57,13 +62,16 @@ func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("ServeHTTP:", err)
 		return
 	}
+
 	client := &Client{
 		Socket: socket,
 		Send:   make(chan []byte, messageBufferSize),
 		Room:   r,
 	}
 	r.Join <- client
+
 	defer func() { r.Leave <- client }()
+
 	go client.write()
 	client.read()
 }

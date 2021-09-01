@@ -22,10 +22,10 @@ func main() {
 
 	http.Handle("/", &server.ChatHandler{Filename: "chat.html", Logger: logger})
 	http.Handle("/room", r)
+
 	go r.Run()
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		logger.Fatal("ListenAndServe:", zap.Error(err))
 	}
-
 }

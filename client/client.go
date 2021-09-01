@@ -9,6 +9,7 @@ const (
 	messageBufferSize = 256
 )
 
+// Client is how all clients look like.
 type Client struct {
 	Socket *websocket.Conn
 	Send   chan []byte
