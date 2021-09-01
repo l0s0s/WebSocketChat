@@ -4,6 +4,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const (
+	socketBufferSize  = 1024
+	messageBufferSize = 256
+)
+
 type Client struct {
 	Socket *websocket.Conn
 	Send   chan []byte
