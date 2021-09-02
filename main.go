@@ -22,13 +22,15 @@ func main() {
 
 	r := client.NewRoom()
 
-	googleO2Config := client.ReadJson("./client_secret_818196946901-fqevd8f91jpq1e71mfgcnv1e4q6qpcv5.apps.googleusercontent.com.json", logger)
+	googleO2Config := client.ReadJSON("./client_secret_818196946901-fqevd8f91jpq1e71mfgcnv1e4q6qpcv5.apps.googleusercontent.com.json", logger)
 
 	r.Tracer = trace.New(os.Stdout)
+
 	gomniauth.SetSecurityKey(signature.RandomKey(64))
 	gomniauth.WithProviders(
-		google.New(googleO2Config["client_id"].(string), googleO2Config["client_secret"].(string), googleO2Config["redirect_uris"].([]interface{})[0].(string)),
-	  )
+		google.New(googleO2Config["client_id"].(string), googleO2Config["client_secret"].(string),
+			googleO2Config["redirect_uris"].([]interface{})[0].(string)),
+	)
 	http.Handle("/chat", client.MustAuth(&server.ChatHandler{Filename: "chat.html"}))
 	http.Handle("/login", &server.ChatHandler{Filename: "login.html"})
 	http.HandleFunc("/auth/", client.LoginHandler)

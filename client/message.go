@@ -4,10 +4,9 @@ import (
 	"time"
 )
 
-// Message represents a single message
+// Message represents a single message.
 type Message struct {
-	Name string
+	Name    string
 	Message string
-	When time.Time
-	}
-	
+	When    time.Time
+}

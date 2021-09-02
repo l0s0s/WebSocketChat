@@ -24,14 +24,14 @@ func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.Filename)))
 	})
 	h.Templ.Execute(w, r)
+
 	data := map[string]interface{}{
 		"Host": r.Host,
-		}
-		if authCookie, err := r.Cookie("auth"); err == nil {
-			data["UserData"] = objx.MustFromBase64(authCookie.Value)
-		}
+	}
 
-		h.Templ.Execute(w, data)
-		}
-		
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
 
+	h.Templ.Execute(w, data)
+}

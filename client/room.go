@@ -70,11 +70,10 @@ func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	client := &Client{
-		Socket: socket,
-		Send:   make(chan *Message, messageBufferSize),
-		Room:   r,
+		Socket:   socket,
+		Send:     make(chan *Message, messageBufferSize),
+		Room:     r,
 		userData: objx.MustFromBase64(authCookie.Value),
-
 	}
 	r.Join <- client
 

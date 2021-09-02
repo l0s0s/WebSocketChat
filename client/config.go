@@ -7,17 +7,19 @@ import (
 	"go.uber.org/zap"
 )
 
-type ClientSecret struct {
+// Secret is google secret.
+type Secret struct {
 	Web map[string]interface{} `json:"web"`
 }
 
-func ReadJson(path string, logger *zap.Logger) map[string]interface{} {
+// ReadJSON is read json fron file.
+func ReadJSON(path string, logger *zap.Logger) map[string]interface{} {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		logger.Fatal("Failed to read \"reddit_jokes.json\"", zap.Error(err))
+		logger.Fatal("Failed to read json", zap.Error(err))
 	}
 
-	var config ClientSecret
+	var config Secret
 
 	err = json.Unmarshal(data, &config)
 	if err != nil {
