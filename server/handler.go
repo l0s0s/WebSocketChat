@@ -23,7 +23,6 @@ func (h *ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.Templ = template.Must(template.ParseFiles(filepath.Join("templates",
 			h.Filename)))
 	})
-	h.Templ.Execute(w, r)
 
 	data := map[string]interface{}{
 		"Host": r.Host,
