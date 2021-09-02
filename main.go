@@ -8,6 +8,9 @@ import (
 	"github.com/l0s0s/WebSocketChat/client"
 	"github.com/l0s0s/WebSocketChat/server"
 	"github.com/l0s0s/WebSocketChat/trace"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/signature"
 	"go.uber.org/zap"
 )
 
@@ -18,9 +21,17 @@ func main() {
 	}
 
 	r := client.NewRoom()
-	r.Tracer = trace.New(os.Stdout)
 
-	http.Handle("/", &server.ChatHandler{Filename: "chat.html"})
+	googleO2Config := client.ReadJson("./client_secret_818196946901-fqevd8f91jpq1e71mfgcnv1e4q6qpcv5.apps.googleusercontent.com.json", logger)
+
+	r.Tracer = trace.New(os.Stdout)
+	gomniauth.SetSecurityKey(signature.RandomKey(64))
+	gomniauth.WithProviders(
+		google.New(googleO2Config["client_id"].(string), googleO2Config["client_secret"].(string), googleO2Config["redirect_uris"].([]interface{})[0].(string)),
+	  )
+	http.Handle("/chat", client.MustAuth(&server.ChatHandler{Filename: "chat.html"}))
+	http.Handle("/login", &server.ChatHandler{Filename: "login.html"})
+	http.HandleFunc("/auth/", client.LoginHandler)
 	http.Handle("/room", r)
 
 	go r.Run()
